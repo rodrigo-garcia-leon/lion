@@ -15,7 +15,7 @@ function getTopElement(el) {
   return crossBrowserRoot.elementFromPoint(left, top);
 }
 
-describe('lion-button', () => {
+describe.only('lion-button', () => {
   it('behaves like native `button` in terms of a11y', async () => {
     const el = await fixture(`<lion-button>foo</lion-button>`);
     expect(el.getAttribute('role')).to.equal('button');
@@ -155,7 +155,7 @@ describe('lion-button', () => {
         `,
       );
 
-      getTopElement(el).click();
+      makeMouseEvent('click', { x: 0, y: 0 }, getTopElement(el));
 
       // trying to wait for other possible redispatched events
       await aTimeout();

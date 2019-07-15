@@ -24,7 +24,7 @@ export class LionButton extends DelegateMixin(SlotMixin(LionLitElement)) {
       <div class="btn">
         <slot></slot>
         <slot name="_button"></slot>
-        <div class="click-area" @click="${this.__clickDelegationHandler}"></div>
+        <div class="click-area"></div>
       </div>
     `;
   }
@@ -140,6 +140,7 @@ export class LionButton extends DelegateMixin(SlotMixin(LionLitElement)) {
     this.disabled = false;
     this.role = 'button';
     this.tabindex = 0;
+    this.addEventListener('click', this.__hostClickDelegationHandlerConstructor);
   }
 
   connectedCallback() {
@@ -155,6 +156,7 @@ export class LionButton extends DelegateMixin(SlotMixin(LionLitElement)) {
   _redispatchClickEvent(oldEvent) {
     // replacing `MouseEvent` with `oldEvent.constructor` breaks IE
     const newEvent = new MouseEvent(oldEvent.type, oldEvent);
+    newEvent.__isNativeButton = true;
     this.__enforceHostEventTarget(newEvent);
     this.$$slot('_button').dispatchEvent(newEvent);
   }
@@ -178,14 +180,38 @@ export class LionButton extends DelegateMixin(SlotMixin(LionLitElement)) {
   }
 
   __setupDelegation() {
-    this.addEventListener('keydown', this.__keydownDelegationHandler);
-    this.addEventListener('keyup', this.__keyupDelegationHandler);
+    this.addEventListener('click', this.__hostClickDelegationHandler);
+    // this.addEventListener('keydown', this.__keydownDelegationHandler);
+    // this.addEventListener('keyup', this.__keyupDelegationHandler);
   }
 
   __teardownDelegation() {
-    this.removeEventListener('keydown', this.__keydownDelegationHandler);
-    this.removeEventListener('keyup', this.__keyupDelegationHandler);
+    this.removeEventListener('click', this.__hostClickDelegationHandler);
+    // this.removeEventListener('keydown', this.__keydownDelegationHandler);
+    // this.removeEventListener('keyup', this.__keyupDelegationHandler);
   }
+
+  addEventListener(...args) {
+    console.log('addEventListener');
+    console.log(args[1]);
+    super.addEventListener(...args);
+  }
+
+  __hostClickDelegationHandlerConstructor(e) {
+    console.log('internal click handler Constructor');
+  }
+
+  __hostClickDelegationHandler(e) {
+    console.log('internal click handler');
+  }
+
+  // if (!e.__isNativeButton) {
+  //   console.log('dispatch');
+  //   e.stopImmediatePropagation();
+  //   this._redispatchClickEvent(e);
+  // } else {
+  //   console.log('ignore');
+  // }
 
   __keydownDelegationHandler(e) {
     if (e.keyCode === 32 /* space */ || e.keyCode === 13 /* enter */) {

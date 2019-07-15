@@ -1,15 +1,21 @@
 import { storiesOf, html } from '@open-wc/demoing-storybook';
-import { bug12 } from '@lion/icon/stories/icons/bugs-collection';
-import '@lion/icon/lion-icon.js';
-import '@lion/form/lion-form.js';
-import '@lion/input/lion-input.js';
-
 import '../lion-button.js';
 
 storiesOf('Buttons|Button', module)
-  .add(
-    'Used on its own',
-    () => html`
+  .add('Button', () => {
+    return html`
+      <lion-button @click="${e => console.log('external click handler', e, e.target)}"
+        >lion-button</lion-button
+      >
+    `;
+  })
+  .add('IE11 click twice bug', () => {
+    setTimeout(() => {
+      document.querySelector('#my-div').addEventListener('click', e => {
+        console.log('div: clicked', e, e.target);
+      });
+    }, 100);
+    return html`
       <style>
         .demo-box {
           display: flex;
@@ -21,27 +27,29 @@ storiesOf('Buttons|Button', module)
         }
       </style>
       <div class="demo-box">
-        <lion-button>Default</lion-button>
-        <lion-button><lion-icon .svg="${bug12}"></lion-icon>Debug</lion-button>
-        <lion-button type="submit">Submit</lion-button>
-        <lion-button aria-label="Debug"><lion-icon .svg="${bug12}"></lion-icon></lion-button>
-        <lion-button onclick="alert('clicked/spaced/entered')">click/space/enter me</lion-button>
-        <lion-button disabled>Disabled</lion-button>
-      </div>
-    `,
-  )
-  .add(
-    'Within a form',
-    () => html`
-      <lion-form id="form"
-        ><form>
-          <lion-input name="foo" label="Foo" .modelValue=${'bar'}></lion-input>
-          <lion-button
-            type="submit"
-            @click=${() => console.log(document.querySelector('#form').serializeGroup())}
-            >Submit</lion-button
+        <div
+          id="my-div"
+          @click=${e => {
+            if (e.isTrusted) {
+              e.stopImmediatePropagation();
+              console.log('div: stop propogation', e, e.target);
+            }
+          }}
+          style="pointer-events: none; background-color: green; padding: 10px; position: relative; width: 100px; height: 100px;"
+        >
+          <span
+            style="pointer-events: auto; background-color: red; width: 100px; height: 100px; position: absolute;"
           >
-        </form></lion-form
+            span
+          </span>
+        </div>
+        <!-- <lion-button
+        @click=${e => {
+          console.log('lion-button: clicked', e, e.target);
+        }}
       >
-    `,
-  );
+        lion-button
+      </lion-button> -->
+      </div>
+    `;
+  });
