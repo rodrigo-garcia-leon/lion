@@ -41,7 +41,7 @@
     "@lion/textarea": "^0.1.33",
     "@lion/validate": "^0.2.16",
     "@open-wc/demoing-storybook": "^0.2.0",
-    "@open-wc/testing": "^0.12.5",
+    "@open-wc/testing": "^2.0.1",
     "sinon": "^7.2.2"
   }
 }
