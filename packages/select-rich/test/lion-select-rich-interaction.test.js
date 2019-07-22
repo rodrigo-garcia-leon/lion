@@ -175,16 +175,13 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      // TODO: special registerComplete promise
-      await aTimeout();
-
+      await el.registrationReady;
       expect(el.checkedValue).to.equal(30);
+
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'Home' }));
-      await el.updateComplete;
       expect(el.checkedValue).to.equal(10);
 
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'End' }));
-      await el.updateComplete;
       expect(el.checkedValue).to.equal(40);
     });
 

@@ -145,6 +145,7 @@ export class LionSelectRich extends FormRegistrarMixin(
     this._invokerNode.setAttribute('aria-haspopup', 'listbox');
 
     this.__setupInvokerNodeEventListener();
+    this.__setupListboxNode();
   }
 
   _requestUpdate(name, oldValue) {
@@ -190,17 +191,6 @@ export class LionSelectRich extends FormRegistrarMixin(
         this._invokerNode.tabIndex = 0;
       }
     }
-  }
-
-  firstUpdated() {
-    super.firstUpdated();
-    this.shadowRoot.querySelector('slot[name=input]').addEventListener('slotchange', () => {
-      this._listboxNode.role = 'listbox';
-      this._listboxNode.addEventListener('click', () => {
-        this.opened = false;
-      });
-      this._listboxNode.addEventListener('keyup', this.__listboxOnKeyUp);
-    });
   }
 
   toggle() {
@@ -415,6 +405,26 @@ export class LionSelectRich extends FormRegistrarMixin(
         break;
       /* no default */
     }
+  }
+
+  __setupListboxNode() {
+    if (this._listboxNode) {
+      this.__setupListboxNodeEventListener();
+    } else {
+      const inputSlot = this.shadowRoot.querySelector('slot[name=input]');
+      if (inputSlot) {
+        inputSlot.addEventListener('slotchange', () => {
+          this.__setupListboxNodeEventListener();
+        });
+      }
+    }
+  }
+
+  __setupListboxNodeEventListener() {
+    this._listboxNode.addEventListener('click', () => {
+      this.opened = false;
+    });
+    this._listboxNode.addEventListener('keyup', this.__listboxOnKeyUp);
   }
 
   __setupInvokerNodeEventListener() {
