@@ -19,10 +19,15 @@ describe('lion-select-invoker', () => {
     el.selectedElement = await fixture(`<div class="option"><h2>I am</h2><p>2 lines</p></div>`);
     await el.updateComplete;
 
-    expect(el.contentWrapper).lightDom.to.equal(`
-      <h2>I am</h2>
-      <p>2 lines</p>
-    `);
+    expect(el.contentWrapper).lightDom.to.equal(
+      `
+        <h2>I am</h2>
+        <p>2 lines</p>
+      `,
+      {
+        ignoreAttributes: ['class'], // ShadyCss automatically adds classes
+      },
+    );
   });
 
   it('renders invoker info based on selectedElement textContent', async () => {
@@ -43,51 +48,29 @@ describe('lion-select-invoker', () => {
     expect(el.getAttribute('tabindex')).to.equal('0');
   });
 
-  describe.skip('Subclassers', () => {
-    it('can create complex custom invoker renderers', async () => {
-      const nodes = [];
-
-      for (let i = 0; i < 2; i += 1) {
-        const myNode = document.createElement('div');
-        myNode.propX = `x${i}`;
-        myNode.propY = `y${i}`;
-        nodes.push(myNode);
-      }
-
-      // TODO: pseudo code: api for multiple selected might change
+  describe('Subclassers', () => {
+    it('supports a custom _contentTemplate', async () => {
       const myTag = defineCE(
         class extends LionSelectInvoker {
-          constructor() {
-            super();
-            this.selectedElements = nodes;
-          }
-
           _contentTemplate() {
-            // Display multi-select as chips
-            return html`
-              <div>
-                ${this.selectedElements.forEach(
-                  sEl => html`
-                    <div class="c-chip">
-                      ${sEl.propX}
-                      <span class="c-chip__part">
-                        ${sEl.propY}
-                      </span>
-                    </div>
-                  `,
-                )}
-              </div>
-            `;
+            if (this.selectedElement && this.selectedElement.textContent === 'cat') {
+              return html`
+                cat selected
+              `;
+            }
+            return `no valid selection`;
           }
         },
       );
+      const el = await fixture(`<${myTag}></${myTag}>`);
 
-      const myEl = await fixture(`<${myTag}></${myTag}>`);
-      // pseudo...
-      expect(myEl).lightDom.to.contain('x1');
-      expect(myEl).lightDom.to.contain('x2');
-      expect(myEl).lightDom.to.contain('y1');
-      expect(myEl).lightDom.to.contain('y2');
+      el.selectedElement = await fixture(`<div class="option">cat</div>`);
+      await el.updateComplete;
+      expect(el.contentWrapper).lightDom.to.equal('cat selected');
+
+      el.selectedElement = await fixture(`<div class="option">dog</div>`);
+      await el.updateComplete;
+      expect(el.contentWrapper).lightDom.to.equal('no valid selection');
     });
   });
 });

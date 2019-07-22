@@ -38,15 +38,10 @@ import '@lion/select-rich/lion-select-rich.js';
 >
   <div slot="label">Favorite color</div>
   <lion-button slot="invoker">Please select</lion-button>
-  <lion-listbox slot="input">
-    <lion-option value="red">Red</lion-option>
-    <lion-option value="hotpink" disabled>Hotpink</lion-option>
-    <lion-optgroup>
-      <lion-option value="teal">Teal</lion-option>
-      <lion-separator></lion-separator>
-      <lion-option value="green">Green</lion-option>
-    </lion-optgroup>
-  </lion-listbox>
+  <lion-options slot="input">
+    <lion-option .modelValue=${{ value: 'red', checked: false }}>Red</lion-option>
+    <lion-option .modelValue=${{ value: 'hotpink', checked: true }}>Hotpink</lion-option>
+  </lion-options>
 </lion-select-rich>
 ```
 

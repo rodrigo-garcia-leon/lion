@@ -126,25 +126,16 @@ export class LionSelectRich extends FormRegistrarMixin(
     this._valueChangedEvent = 'select-model-value-changed';
     this._listboxActiveDescendant = null;
 
-    this.__onOptionActiveChanged = this.__onOptionActiveChanged.bind(this);
-    this.__onChildModelValueChanged = this.__onChildModelValueChanged.bind(this);
     this.__listboxOnKeyUp = this.__listboxOnKeyUp.bind(this);
-    this.__onKeyUp = this.__onKeyUp.bind(this);
-    this.toggle = this.toggle.bind(this);
+
+    this.__setupEventListeners();
   }
 
   connectedCallback() {
     super.connectedCallback(); // eslint-disable-line wc/guard-super-call
-    this.addEventListener('active-changed', this.__onOptionActiveChanged);
-    this.addEventListener('model-value-changed', this.__onChildModelValueChanged);
-    this.addEventListener('keyup', this.__onKeyUp);
 
     this.__setupOverlay();
-
-    this._invokerNode.id = `invoker-${this._inputId}`;
-    this._invokerNode.setAttribute('aria-haspopup', 'listbox');
-
-    this.__setupInvokerNodeEventListener();
+    this.__setupInvokerNode();
     this.__setupListboxNode();
   }
 
@@ -279,7 +270,17 @@ export class LionSelectRich extends FormRegistrarMixin(
     }
   }
 
-  __onOptionActiveChanged({ target }) {
+  __setupEventListeners() {
+    this.__onChildActiveChanged = this.__onChildActiveChanged.bind(this);
+    this.__onChildModelValueChanged = this.__onChildModelValueChanged.bind(this);
+    this.__onKeyUp = this.__onKeyUp.bind(this);
+
+    this.addEventListener('active-changed', this.__onChildActiveChanged);
+    this.addEventListener('model-value-changed', this.__onChildModelValueChanged);
+    this.addEventListener('keyup', this.__onKeyUp);
+  }
+
+  __onChildActiveChanged({ target }) {
     if (target.active === true) {
       this.formElements.forEach(formElement => {
         if (formElement !== target) {
@@ -407,6 +408,27 @@ export class LionSelectRich extends FormRegistrarMixin(
     }
   }
 
+  __setupInvokerNode() {
+    this._invokerNode.id = `invoker-${this._inputId}`;
+    this._invokerNode.setAttribute('aria-haspopup', 'listbox');
+
+    this.__setupInvokerNodeEventListener();
+  }
+
+  __setupInvokerNodeEventListener() {
+    this.__invokerOnClick = () => {
+      if (!this.disabled) {
+        this.toggle();
+      }
+    };
+    this._invokerNode.addEventListener('click', this.__invokerOnClick);
+
+    this.__invokerOnBlur = () => {
+      this.dispatchEvent(new Event('blur'));
+    };
+    this._invokerNode.addEventListener('blur', this.__invokerOnBlur);
+  }
+
   __setupListboxNode() {
     if (this._listboxNode) {
       this.__setupListboxNodeEventListener();
@@ -425,20 +447,6 @@ export class LionSelectRich extends FormRegistrarMixin(
       this.opened = false;
     });
     this._listboxNode.addEventListener('keyup', this.__listboxOnKeyUp);
-  }
-
-  __setupInvokerNodeEventListener() {
-    this.__invokerOnClick = () => {
-      if (!this.disabled) {
-        this.toggle();
-      }
-    };
-    this._invokerNode.addEventListener('click', this.__invokerOnClick);
-
-    this.__invokerOnBlur = () => {
-      this.dispatchEvent(new Event('blur'));
-    };
-    this._invokerNode.addEventListener('blur', this.__invokerOnBlur);
   }
 
   __setupOverlay() {

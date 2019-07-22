@@ -1,4 +1,4 @@
-import { expect, fixture, html, aTimeout } from '@open-wc/testing';
+import { expect, fixture, html } from '@open-wc/testing';
 
 import '@lion/option/lion-option.js';
 import '../lion-options.js';
@@ -31,7 +31,6 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      await el.registrationReady;
 
       expect(el.querySelector('lion-option').checked).to.be.true;
       expect(el.querySelector('lion-option').active).to.be.true;
@@ -70,7 +69,6 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      await aTimeout();
       expect(el.modelValue).to.deep.equal([
         { value: 10, checked: false },
         { value: 20, checked: true },
@@ -103,14 +101,9 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      // TODO: special registerComplete promise
-      await aTimeout();
-
       expect(el.activeIndex).to.equal(0);
 
       el.querySelectorAll('lion-option')[1].active = true;
-      await el.updateComplete;
-
       expect(el.querySelectorAll('lion-option')[0].active).to.be.false;
       expect(el.activeIndex).to.equal(1);
     });
@@ -134,7 +127,6 @@ describe('lion-select-rich interactions', () => {
         </lion-select-rich>
       `);
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowDown' }));
-      await el.updateComplete;
       expect(el.checkedValue).to.equal(10);
     });
 
@@ -175,7 +167,6 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      await el.registrationReady;
       expect(el.checkedValue).to.equal(30);
 
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'Home' }));
@@ -198,7 +189,6 @@ describe('lion-select-rich interactions', () => {
       `);
       expect(el.choiceValue).to.equal('a');
       el.dispatchEvent(new KeyboardEvent('keyup', { key: 'C' }));
-      await el.updateComplete;
       expect(el.choiceValue).to.equal('c');
     });
 
@@ -213,10 +203,8 @@ describe('lion-select-rich interactions', () => {
         </lion-select-rich>
       `);
       el.dispatchEvent(new KeyboardEvent('keyup', { key: 'F' }));
-      await el.updateComplete;
       expect(el.choiceValue).to.equal('far');
       el.dispatchEvent(new KeyboardEvent('keyup', { key: 'O' }));
-      await el.updateComplete;
       expect(el.choiceValue).to.equal('foo');
     });
   });
@@ -242,8 +230,6 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      // TODO: special registerComplete promise
-      await aTimeout();
 
       const options = Array.from(el.querySelectorAll('lion-option'));
       expect(el.activeIndex).to.equal(0);
@@ -251,13 +237,11 @@ describe('lion-select-rich interactions', () => {
       expectOnlyGivenOneOptionToBeChecked(options, 0);
 
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowDown' }));
-      await el.updateComplete;
       expect(el.activeIndex).to.equal(1);
       expect(el.checkedIndex).to.equal(1);
       expectOnlyGivenOneOptionToBeChecked(options, 1);
 
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowUp' }));
-      await el.updateComplete;
       expect(el.activeIndex).to.equal(0);
       expect(el.checkedIndex).to.equal(0);
       expectOnlyGivenOneOptionToBeChecked(options, 0);
@@ -295,19 +279,14 @@ describe('lion-select-rich interactions', () => {
           </lion-options>
         </lion-select-rich>
       `);
-      // TODO: special registerComplete promise
-      await aTimeout();
-
       expect(el.activeIndex).to.equal(0);
       expect(el.checkedIndex).to.equal(0);
 
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowDown' }));
-      await el.updateComplete;
       expect(el.activeIndex).to.equal(1);
       expect(el.checkedIndex).to.equal(0);
 
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowUp' }));
-      await el.updateComplete;
       expect(el.activeIndex).to.equal(0);
       expect(el.checkedIndex).to.equal(0);
     });
@@ -332,7 +311,6 @@ describe('lion-select-rich interactions', () => {
         </lion-select-rich>
       `);
       el._listboxNode.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowDown' }));
-      await el.updateComplete;
       expect(el.choiceValue).to.equal(10);
     });
   });
@@ -430,7 +408,6 @@ describe('lion-select-rich interactions', () => {
       `);
       expect(el.dirty).to.be.false;
       el.checkedValue = 20;
-      await el.updateComplete;
       expect(el.dirty).to.be.true;
     });
 
